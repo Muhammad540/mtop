@@ -5,6 +5,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <dirent.h>
 
 namespace LinuxParser {
     const std::string kProcDirectory{"/proc/"};
@@ -26,6 +27,16 @@ namespace LinuxParser {
     std::string OperatingSystem();
     std::string Kernel();
 
+    /*  brief descruption of /proc/stats 
+        user	time spent executing normal user space processes
+	    nice	time spent on "niced" (lower priority) user space processes
+	    system	time spent executing kernel space code (e.g system calls)
+	    idle	time the CPU was completely idle
+	    iowait	time spent waiting for I/O
+	    irq	    time servicing hardware interrupts
+	    softirq	time servicing software interrupts
+	    steal	time stolen by the hypervisor for other tasks
+    */
     enum CPUStates {
         kUser_ = 0,
         kNice_,
