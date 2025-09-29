@@ -2,6 +2,8 @@
 #define UTILS_HPP
 
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 namespace Utils {
     //  input:  Long int measuring seconds 

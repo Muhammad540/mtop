@@ -150,6 +150,18 @@ std::string LinuxParser::Kernel() {
 }
 
 std::vector<std::string> LinuxParser::CpuUtilization() {
+    /*
+        user       - Normal processes in user mode
+        nice       - Niced processes in user mode
+        system     - Kernel mode
+        idle       - Idle time
+        iowait     - Waiting for I/O
+        irq        - Hardware interrupts
+        softirq    - Software interrupts
+        steal      - Involuntary wait
+        guest      - Running guest VMs
+        guest_nice - Niced guest VMs
+    */
     std::ifstream file(kStatFilename);
     if (!file.is_open()) return {};
     std::string line;

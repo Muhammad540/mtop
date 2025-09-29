@@ -2,6 +2,7 @@
 #define PROCESS_HPP
 
 #include <string>
+#include <unistd.h>
 
 class Process {
     public:
