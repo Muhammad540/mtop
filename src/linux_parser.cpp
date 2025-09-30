@@ -50,7 +50,7 @@ namespace {
 float LinuxParser::MemoryUtilization() {
     long mem_total = 0, mem_free = 0, buffers = 0, cached = 0, sreclaimable = 0, shmem = 0;
 
-    std::ifstream file(kMeminfoFilename);
+    std::ifstream file(kProcDirectory + kMeminfoFilename);
     if (!file.is_open()) return 0;
     std::string key;
     long value;
@@ -73,7 +73,7 @@ float LinuxParser::MemoryUtilization() {
 }
 
 long LinuxParser::UpTime() {
-    std::ifstream file(kUptimeFilename);
+    std::ifstream file(kProcDirectory + kUptimeFilename);
     double uptime{0.0};
     file >> uptime;
     return static_cast<long>(uptime);
@@ -97,7 +97,7 @@ std::vector<int> LinuxParser::Pids() {
 }
 
 int LinuxParser::TotalProcesses() {
-    std::ifstream file(kStatFilename);
+    std::ifstream file(kProcDirectory + kStatFilename);
     if (!file.is_open()) return 0;
     std::string key;
     int value;
@@ -109,7 +109,7 @@ int LinuxParser::TotalProcesses() {
 }
 
 int LinuxParser::RunningProcesses() {
-    std::ifstream file(kStatFilename);
+    std::ifstream file(kProcDirectory + kStatFilename);
     if (!file.is_open()) return 0;
     std::string key;
     int value;
@@ -140,7 +140,7 @@ std::string LinuxParser::OperatingSystem() {
 }
 
 std::string LinuxParser::Kernel() {
-    std::ifstream stream(kVersionFilename);
+    std::ifstream stream(kProcDirectory + kVersionFilename);
     if (!stream.is_open()) return {};
     std::string os, version, kernel;
     std::getline(stream, os, ' ');
@@ -162,7 +162,7 @@ std::vector<std::string> LinuxParser::CpuUtilization() {
         guest      - Running guest VMs
         guest_nice - Niced guest VMs
     */
-    std::ifstream file(kStatFilename);
+    std::ifstream file(kProcDirectory + kStatFilename);
     if (!file.is_open()) return {};
     std::string line;
     std::getline(file, line);

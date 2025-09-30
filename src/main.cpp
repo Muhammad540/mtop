@@ -39,27 +39,29 @@ int main() {
 
         int count = 0;
         for (auto& p: processes) {
-            if (count++ >= 15) break;
             const int pid = p.Pid();
             const std::string user = p.User();
             const float cpu = p.CpuUtilization() * 100.f;
             const std::string mem = p.Ram();
             std::string cmd = p.Command();
+            if (cmd.empty()) continue;
             if (cmd.size() > 40) cmd = cmd.substr(0, 37) + "...";
 
             s.procs.push_back({
                 std::to_string(pid),
-                user,
+                user.empty() ? std::string("?") : user,
                 std::to_string(static_cast<int>(cpu)),
                 mem,
                 cmd
             });
+            if (count++ >= 15) break;
         }
 
         {
             std::lock_guard<std::mutex> lk(mtx);
             state = std::move(s);
         }
+        screen.Post(Event::Custom);
     };
 
     std::thread sampler([&]{
@@ -82,12 +84,12 @@ int main() {
 
         auto cpu = vbox({
             text("CPU") | bold,
-            gauge(0.5) | color(Color::Green) | border,
+            gauge(state.total_cpu) | color(Color::Green) | border,
         }) | flex;
 
         auto mem = vbox({
             text("Memory (non cache/buffers)") | bold,
-            gauge(0.5) | color(Color::Yellow) | border,
+            gauge(state.mem_used) | color(Color::Yellow) | border,
         }) | flex;
 
         std::vector<Element> rows;
@@ -120,6 +122,7 @@ int main() {
             separator(),
             hbox({ cpu, separator(), mem}),
             separator(),
+            table | flex,
         }) | border;
     
     });
