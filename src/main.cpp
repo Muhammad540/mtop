@@ -233,24 +233,24 @@ int main() {
         }
 
         auto table = vbox(std::move(rows)) | border;
-        
-        auto background = bgcolor(LinearGradient()
-                    .Angle(100.f)
-                    .Stop(Color::Blue, 0.f)
-                    .Stop(Color::Red, 1.f));
 
-        auto foreground = vbox({
+        auto display = vbox({
             header,
             separator(),
             hbox({ cpu_graph | flex, separator(), mem_graph | flex }),
             separator(),
-            (show_cores.load() ? text("Per-core: expanded (press 'c' to collapse)") : text("Per-core: collapsed (press 'c' to expand)")) | dim,
+            (show_cores ? text("Per-core: expanded (press 'c' to collapse)")
+                        : text("Per-core: collapsed (press 'c' to expand)")) | dim,
             vbox(std::move(core_rows)) | flex,
             separator(),
             table | flex,
-        }) | flex ;
-
-        return dbox(background, foreground);
+          }) | flex
+            | bgcolor(LinearGradient()
+                        .Angle(100.f)
+                        .Stop(Color::DarkGreen, 0.f)
+                        .Stop(Color::Green, 1.f));
+          
+        return display;
     });
     
     auto ui_with_keys = CatchEvent(ui, [&](Event e){
