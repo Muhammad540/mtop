@@ -1,3 +1,4 @@
+![mtop screenshot](header.png)
 # mtop: a minimal terminal monitor
 
 mtop (“my top”) is a terminal UI inspired by htop. I built it while exploring terminal UIs and Linux proc files parsing.
