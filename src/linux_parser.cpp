@@ -69,7 +69,7 @@ float LinuxParser::MemoryUtilization() {
     long cached_all = cached + sreclaimable - shmem;
     long non_cache_used = used - (buffers +  cached_all);
     if (non_cache_used < 0) non_cache_used = 0;
-    return static_cast<float>(non_cache_used) / static_cast<float>(mem_total);
+    return static_cast<float>(used) / static_cast<float>(mem_total);
 }
 
 long LinuxParser::UpTime() {
@@ -322,4 +322,35 @@ long int LinuxParser::UpTime(int pid) {
     long seconds = uptime - (starttime / hertz);
     if (seconds < 0) seconds = 0;
     return seconds;
+}
+
+bool LinuxParser::ReadCpuTimesAll(std::vector<CpuTimes>& out) {
+    std::ifstream file(kProcDirectory + kStatFilename);
+    if (!file.is_open()) return false;
+    out.clear();
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.rfind("cpu", 0) != 0) break;
+        std::istringstream ss(line);
+        std::string cpu_label;
+        CpuTimes time;
+        ss >> cpu_label;
+        ss >> time.user >> time.nice >> time.system >> time.idle >> time.iowait >> time.irq >> time.softirq >> time.steal;
+        out.push_back(time);
+    }
+    return !out.empty();
+}
+
+float LinuxParser::UtilFromData(const CpuTimes &prev, const CpuTimes &curr) {
+    long prev_idle = prev.idle + prev.iowait;
+    long idle = curr.idle + curr.iowait;
+    long prev_non = prev.user + prev.nice + prev.system + prev.irq + prev.softirq + prev.steal;
+    long non = curr.user + curr.nice + curr.system + curr.irq + curr.softirq + curr.steal;
+    long prev_total = prev_idle + prev_non;
+    long total = idle + non;
+    // d for deltas :) 
+    long totald = total - prev_total;
+    long idled = idle - prev_idle;
+    if (totald <= 0) return 0.f;
+    return std::max(0.f, std::min(1.f, (totald - idled) / static_cast<float>(totald)));
 }

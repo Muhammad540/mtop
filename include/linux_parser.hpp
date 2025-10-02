@@ -50,7 +50,13 @@ namespace LinuxParser {
         kGuestNice_
     };
 
+    struct CpuTimes {
+        long user{0}, nice{0}, system{0}, idle{0}, iowait{0}, irq{0}, softirq{0}, steal{0};
+    };
+
     std::vector<std::string> CpuUtilization();
+    bool ReadCpuTimesAll(std::vector<CpuTimes>& out);
+    float UtilFromData(const CpuTimes& prev, const CpuTimes& curr);
     long Jiffies();
     long ActiveJiffies();
     long ActiveJiffies(int pid);
